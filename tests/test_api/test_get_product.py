@@ -1,21 +1,20 @@
 import pytest
-import requests
 import tests.expected as expected
 from utils.api_client import get, post
 from utils.helpers import get_product_ids
+from utils.config import URL
 
-BASE_ENDPOINT = "/products"
 positive_coverage = 100 #Positive percentage of site products
 negative_coverage = 5 #Negative percentage of site products
-positive_product_ids = get_product_ids(positive_coverage) #List for positive test
-negative_product_ids = get_product_ids(negative_coverage) #List for negative test
+positive_product_ids = get_product_ids(URL, positive_coverage) #List for positive test
+negative_product_ids = get_product_ids(URL, negative_coverage) #List for negative test
 false_ids = [-1, 0, 10000, "abc", "!@#"]
 
 ### ✅ POSITIVE TEST CASES ###
 @pytest.mark.parametrize("product_id", positive_product_ids)
 def test_structure_sanity(product_id):
     """Verify that fetching a product with a valid ID returns 200 and correct content type and json keys"""
-    response = get(f"{BASE_ENDPOINT}/{product_id}")
+    response = get(f"{URL}/{product_id}")
 
     # Verify status code
     assert response.status_code == expected.STATUS_OK, f"Expected {expected.STATUS_OK}, but got {response.status_code}"
@@ -31,7 +30,7 @@ def test_structure_sanity(product_id):
 
 @pytest.mark.parametrize("product_id", positive_product_ids)
 def test_data_type_integrity(product_id):
-    response = get(f"{BASE_ENDPOINT}/{product_id}")
+    response = get(f"{URL}/{product_id}")
     json_response = response.json()
     # Check data types and data integrity
     assert isinstance(json_response["id"], int), "ID should be an integer"
@@ -50,17 +49,15 @@ def test_data_type_integrity(product_id):
 
     # Check if the image URL is accessible
     img_url = json_response["image"]
-    try:
-        img_response = requests.get(img_url)
-        assert img_response.status_code == expected.STATUS_OK, f"Broken image URL: {img_url}"
-    except requests.RequestException:
-        assert False, f"Failed to fetch image URL: {img_url}"
+    img_response = get(img_url)
+    assert img_response.status_code == expected.STATUS_OK, f"Broken image URL: {img_url}"
+
 
 ### ❌ NEGATIVE TEST CASES ###
 @pytest.mark.parametrize("invalid_id", false_ids)
 def test_false_ids(invalid_id):
     """Verify that fetching a product with an invalid ID returns a 404 or appropriate error response"""
-    response = get(f"{BASE_ENDPOINT}/{invalid_id}")
+    response = get(f"{URL}/{invalid_id}")
 
     # Verify proper error handling
     assert (response.status_code in [expected.STATUS_NOT_FOUND, expected.STATUS_BAD_REQUEST],
@@ -73,7 +70,7 @@ def test_false_ids(invalid_id):
 @pytest.mark.parametrize("product_id",  negative_product_ids)
 def test_wrong_command(product_id):
     """Verify that calling the GET endpoint with an incorrect HTTP method (POST) is rejected"""
-    response = post(f"{BASE_ENDPOINT}/{product_id}", {})  # Sending an empty body as POST is invalid
+    response = post(f"{URL}/{product_id}", {})  # Sending an empty body as POST is invalid
 
     # Expected error: Method Not Allowed (405)
     assert response.status_code == expected.STATUS_METHOD_NOT_ALLOWED, (f"Expected {expected.STATUS_METHOD_NOT_ALLOWED},"

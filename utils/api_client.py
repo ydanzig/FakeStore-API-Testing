@@ -1,12 +1,15 @@
 import requests
 
-BASE_URL = "https://fakestoreapi.com"
+request_timeout = 10  # Timeout in seconds
 
-def get(endpoint):
-    return requests.get(f"{BASE_URL}{endpoint}")
+def get(url, timeout=request_timeout):
+    """Send a GET request and return the raw response."""
+    return requests.get(url, timeout=timeout)
 
-def post(endpoint, data):
-    return requests.post(f"{BASE_URL}{endpoint}", json=data)
+def post(url, data, timeout=request_timeout):
+    """Send a POST request and return the raw response."""
+    return requests.post(url, json=data, timeout=timeout)
 
-def delete(endpoint):
-    return requests.delete(f"{BASE_URL}{endpoint}")
+def delete(url, timeout=request_timeout):
+    """Send a DELETE request and return the raw response."""
+    return requests.delete(url, timeout=timeout)
