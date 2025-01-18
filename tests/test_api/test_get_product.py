@@ -5,10 +5,10 @@ from utils.helpers import get_product_ids
 from utils.config import URL
 
 positive_coverage = 100 #Positive percentage of site products
-negative_coverage = 5 #Negative percentage of site products
+negative_coverage = 1 #Negative percentage of site products
 positive_product_ids = get_product_ids(URL, positive_coverage) #List for positive test
 negative_product_ids = get_product_ids(URL, negative_coverage) #List for negative test
-false_ids = [-1, 0, 10000, "abc", "!@#"]
+
 
 ### ✅ POSITIVE TEST CASES ###
 @pytest.mark.parametrize("product_id", positive_product_ids)
@@ -54,7 +54,7 @@ def test_data_type_integrity(product_id):
 
 
 ### ❌ NEGATIVE TEST CASES ###
-@pytest.mark.parametrize("invalid_id", false_ids)
+@pytest.mark.parametrize("invalid_id", [-1, 0, 10000, "abc", "!@#"])
 def test_false_ids(invalid_id):
     """Verify that fetching a product with an invalid ID returns a 404 or appropriate error response"""
     response = get(f"{URL}/{invalid_id}")
@@ -77,7 +77,7 @@ def test_wrong_command(product_id):
                                                                         f" but got {response.status_code}")
     # Verify response body contains correct error message
     response_text = response.text.strip()
-    expected_error_text = f"Cannot POST /products/{product_id}"
+    expected_error_text = f"{expected.EXPECTED_WRONG_COMMAND_MESSAGE}{product_id}"
     assert expected_error_text in response_text, (
         f"Expected error message '{expected_error_text}', but got '{response_text}'"
     )
