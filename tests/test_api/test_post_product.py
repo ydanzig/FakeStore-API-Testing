@@ -5,8 +5,9 @@ import tests.expected as expected
 from utils.helpers import format_assert_message
 
 ### ✅ POSITIVE TEST CASES ###
+    # 1. POSTING PRODUCT
 ### ❌ NEGATIVE TEST CASES ###
-    #  1. INVALID JSON / EMPTY DATA
+    # 1. INVALID JSON / EMPTY DATA
     # 2. MISSING OR NULL FIELDS
     # 3. WRONG DATA TYPES
     # 4. EMPTY OR INVALID FIELD VALUES

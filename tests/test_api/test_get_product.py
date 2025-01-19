@@ -6,8 +6,8 @@ from utils.config import URL
 
 positive_coverage = 100 #Positive percentage of site products
 negative_coverage = 1 #Negative percentage of site products
-positive_product_ids = get_product_ids(URL, positive_coverage) #List for positive test
-negative_product_ids = get_product_ids(URL, negative_coverage) #List for negative test
+positive_product_ids = get_product_ids(percentage=positive_coverage) #List for positive test
+negative_product_ids = get_product_ids(percentage=negative_coverage) #List for negative test
 
 
 ### ✅ POSITIVE TEST CASES ###
@@ -26,7 +26,7 @@ def test_structure_sanity(product_id):
     json_response = response.json()
     assert isinstance(json_response, dict), "Response should be a dictionary"
     assert all(key in json_response for key in expected.EXPECTED_PRODUCT_KEYS), "Missing keys in response"
-    assert json_response["id"] == product_id #Vlidate correct product load.
+    assert json_response["id"] == product_id, "Incorrect product load"
 
 @pytest.mark.parametrize("product_id", positive_product_ids)
 def test_data_type_integrity(product_id):
@@ -60,8 +60,8 @@ def test_false_ids(invalid_id):
     response = get(f"{URL}/{invalid_id}")
 
     # Verify proper error handling
-    assert (response.status_code in [expected.STATUS_NOT_FOUND, expected.STATUS_BAD_REQUEST],
-            f"Expected {expected.STATUS_NOT_FOUND} or {expected.STATUS_BAD_REQUEST}, but got {response.status_code}")
+    expected_statuses = [expected.STATUS_NOT_FOUND, expected.STATUS_BAD_REQUEST]
+    assert response.status_code in expected_statuses, f"Expected {expected_statuses}, but got {response.status_code}"
 
     # Verify result is empty (not showing any product)
     response_text = response.text.strip()
@@ -73,8 +73,10 @@ def test_wrong_command(product_id):
     response = post(f"{URL}/{product_id}", {})  # Sending an empty body as POST is invalid
 
     # Expected error: Method Not Allowed (405)
-    assert response.status_code == expected.STATUS_METHOD_NOT_ALLOWED, (f"Expected {expected.STATUS_METHOD_NOT_ALLOWED},"
-                                                                        f" but got {response.status_code}")
+    assert response.status_code == expected.STATUS_METHOD_NOT_ALLOWED, (
+        f"Expected {expected.STATUS_METHOD_NOT_ALLOWED}, but got {response.status_code}"
+    )
+
     # Verify response body contains correct error message
     response_text = response.text.strip()
     expected_error_text = f"{expected.EXPECTED_WRONG_COMMAND_MESSAGE}{product_id}"
