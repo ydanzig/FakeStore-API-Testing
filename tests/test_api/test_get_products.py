@@ -1,3 +1,21 @@
+"""
+API Test Suite for GET All Products Endpoint
+
+This module contains automated tests for validating the **GET /products** API
+of the FakeStore API.
+
+✅ **Test Cases:**
+1. **test_sanity_all_products**
+   - Ensures a **successful response (200 OK)**.
+   - Verifies the API returns **valid JSON data** in **list format**.
+
+2. **test_data_type_integrity**
+   - Validates **data types** for all fields.
+   - Ensures **each product has the expected keys**.
+   - Checks for **unique product IDs** (no duplicates).
+   - Verifies **no missing product IDs** within the range."""
+
+
 import tests.expected as expected
 from utils.api_client import get
 from utils.config import URL
@@ -45,13 +63,14 @@ def test_data_type_integrity():
         assert isinstance(product["image"], str) and product["image"].startswith(
             "http"), "Image URL should start with http"
         assert isinstance(product["rating"], dict), "Rating should be a dictionary"
+
+        # Validate rating values
         assert "rate" in product["rating"] and isinstance(product["rating"]["rate"],
-                                                          (int, float)), "Rate should be a float or int"
+            (int, float)), "Rate should be a float or int"
         assert product["rating"]["rate"] >= 0, f"Rate should be >= 0, but got {product['rating']['rate']}"
         assert "count" in product["rating"] and isinstance(product["rating"]["count"],
-                                                           int), "Count should be an integer"
-        assert product["rating"][
-                   "count"] >= 0, f"Count should be >= 0, but got {product['rating']['count']}"
+             int), "Count should be an integer"
+        assert product["rating"]["count"] >= 0, f"Count should be >= 0, but got {product['rating']['count']}"
 
         # Ensure Product IDs are unique
         assert product["id"] not in seen_ids, f"Duplicate product ID found: {product['id']}"

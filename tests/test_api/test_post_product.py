@@ -1,21 +1,42 @@
+"""
+ API Test Suite for POST Product Endpoint
+
+This module contains automated tests for validating the **POST /products** API
+of the FakeStore API.
+
+📝 **Purpose:**
+- Ensures **products can be added correctly**.
+- Validates **status codes, response structures, and data integrity**.
+- Checks **edge cases, invalid inputs, and security vulnerabilities**.
+
+✅ **Test Cases:**
+1. **test_post_product_positive**
+   - Ensures valid product creation with **200 OK** response.
+   - Verifies the response contains the correct **structure and data**.
+
+🚨 **Negative Test Cases:**
+2. **test_invalid_json** → Ensures rejection of **invalid or empty JSON**.
+3. **test_missing_fields** → Checks that **missing fields** trigger errors.
+4. **test_wrong_data_types** → Ensures **wrong field types** are rejected.
+5. **test_invalid_field_values** → Detects **empty or incorrectly formatted values**.
+6. **test_invalid_price_values** → Prevents **negative or zero prices** (if applicable).
+7. **test_unexpected_fields** → Blocks **extra, unexpected fields**.
+8. **test_large_values** → Ensures **large inputs** don’t crash the system.
+9. **test_invalid_image_formats** → Prevents **non-image file uploads** as images.
+10.**test_security_hacker_attempts** → Blocks **SQL Injection, XSS, and other threats**.
+
+🔍 **Test Coverage:**
+- ✅ **Successful Product Creation**
+- ✅ **Proper Response Validation**
+- ✅ **Error Handling for Invalid Inputs**
+- ✅ **Security & Injection Protection**
+- ✅ **Edge Case Handling (Large Inputs, Unexpected Data)**"""
+
 import pytest
 from utils.api_client import post
 from utils.config import URL, LARGE_TITLE, LARGE_PRICE, LARGE_IMAGE_URL
 import tests.expected as expected
 from utils.helpers import format_assert_message
-
-### ✅ POSITIVE TEST CASES ###
-    # 1. POSTING PRODUCT
-### ❌ NEGATIVE TEST CASES ###
-    # 1. INVALID JSON / EMPTY DATA
-    # 2. MISSING OR NULL FIELDS
-    # 3. WRONG DATA TYPES
-    # 4. EMPTY OR INVALID FIELD VALUES
-    # 5. INVALID PRICE VALUES
-    # 6. UNEXPECTED FIELDS
-    # 7. LARGE VALUE TESTING
-    # 8. INVALID IMAGE FORMATS
-    # 9. SECURITY & HACKER TESTING
 
 ### ✅ POSITIVE TEST CASES ###
 @pytest.mark.parametrize("product_data", [

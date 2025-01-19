@@ -1,3 +1,11 @@
+"""
+    Summary of `test_delete_product.py`
+1. ✅ Delete Existing Product – Ensures valid products can be deleted (200 OK).
+2. ✅ Verify Deletion (Optional) – Checks if a deleted product is truly removed (Disabled by default).
+3. ❌ Delete Non-Existent Product – Tests API response for invalid or missing product IDs (400/405).
+
+Focus: Validate deletion functionality, error handling, and API stability.
+"""
 import pytest
 from utils.api_client import delete, get
 from utils.config import URL

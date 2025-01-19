@@ -1,11 +1,29 @@
+"""
+API Test Suite for GET Product Endpoint
+
+This module contains automated tests for validating the **GET /products/{id}** API
+of the FakeStore API.
+
+✅ **Positive Test Cases:**
+1. **test_structure_sanity** - Ensures valid product requests return expected structure.
+2. **test_data_type_integrity** - Validates data types and values of API responses.
+
+❌ **Negative Test Cases:**
+3. **test_false_ids** - Checks behavior when requesting non-existent products.
+4. **test_wrong_command** - Ensures invalid HTTP methods return correct errors.
+"""
+
 import pytest
 import tests.expected as expected
 from utils.api_client import get, post
 from utils.helpers import get_product_ids
 from utils.config import URL
 
+# Define test coverage percentages
 positive_coverage = 100 #Positive percentage of site products
 negative_coverage = 1 #Negative percentage of site products
+
+# Fetch product IDs for testing
 positive_product_ids = get_product_ids(percentage=positive_coverage) #List for positive test
 negative_product_ids = get_product_ids(percentage=negative_coverage) #List for negative test
 
@@ -30,8 +48,11 @@ def test_structure_sanity(product_id):
 
 @pytest.mark.parametrize("product_id", positive_product_ids)
 def test_data_type_integrity(product_id):
+    """Validate that the API returns the correct data types for each product field."""
+
     response = get(f"{URL}/{product_id}")
     json_response = response.json()
+
     # Check data types and data integrity
     assert isinstance(json_response["id"], int), "ID should be an integer"
     assert isinstance(json_response["title"], str) and json_response["title"], "Title should be a non-empty string"
@@ -40,11 +61,13 @@ def test_data_type_integrity(product_id):
     assert isinstance(json_response["category"], str) and json_response["category"], "Category should be a non-empty string"
     assert isinstance(json_response["image"], str) and json_response["image"].startswith("http"), "Image URL should be a valid string starting with http"
     assert isinstance(json_response["rating"], dict), "Rating should be a dictionary"
+
+    # Validate rating values
     assert "rate" in json_response["rating"] and isinstance(json_response["rating"]["rate"],
-                                                            (int, float)), "Rate should be a float or int"
+        (int, float)), "Rate should be a float or int"
     assert json_response["rating"]["rate"] >= 0, f"Rate should be >= 0, but got {json_response['rating']['rate']}"
     assert "count" in json_response["rating"] and isinstance(json_response["rating"]["count"],
-                                                             int), "Count should be an integer"
+        int), "Count should be an integer"
     assert json_response["rating"]["count"] >= 0, f"Count should be >= 0, but got {json_response['rating']['count']}"
 
     # Check if the image URL is accessible
