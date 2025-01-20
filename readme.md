@@ -34,11 +34,6 @@ pytest
 pytest tests/test_api/test_post_product.py
 ```
 
-#### ✅ **Run tests in parallel (faster execution)**
-```sh
-pytest -n auto
-```
-
 #### ✅ **Run only stress tests**
 ```sh
 pytest -m stress
